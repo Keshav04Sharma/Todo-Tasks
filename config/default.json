@@ -1,0 +1,24 @@
+{
+    "db"  :  {
+        "host":"localhost",
+        "user":"root",
+        "password":"keshavsql2004",
+        "database": "todo_single"  ,
+        "port": 3306
+    },
+    
+    "PORT" : 8000,
+
+    "redis":{
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": "",
+        "prefix": "user_id-"
+    },
+
+    "mongo": {
+        "url" : "mongodb://localhost:27017/todo"    
+    },
+
+    "selectedDb": "mongo"
+}
