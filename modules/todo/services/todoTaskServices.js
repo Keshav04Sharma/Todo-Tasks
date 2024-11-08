@@ -7,7 +7,6 @@ exports.getTasks = async(apiReference, opts)=>{
 
     let response = {success:false};
     
-    
     let getResponse = await todoDao.getTasks(apiReference, opts);
     // if the obj returned by dao did'nt contain success key or success was false then the operation failed
 

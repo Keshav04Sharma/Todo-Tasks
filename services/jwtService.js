@@ -2,17 +2,24 @@
 
 const logging = require("../logging/logging");
 let jwt = require('jsonwebtoken');
+const dbProperties = require("../database/dbProperties");
 
 const key = "nadna69dnjand344hiknins";
 
 const createJwt = async(apiReference, opts, expireTime)=>{
     logging.log(apiReference, {EVENT: "Creating a JWT Token Service", OPTS:opts});
+    let user;
+    if (dbProperties.selectedDb ==='mongo'){
+        user = opts._id;
+    }else{user = opts.user_id;}
     let payload =  {
         f_name: opts.f_name,
         l_name: opts.l_name,
         email: opts.email,
-        user_id: opts._id
+        user_id: user,
+        role: opts.role
     }
+    
     return jwt.sign(payload, key, {'expiresIn':expireTime});
 }
 

@@ -23,8 +23,10 @@ exports.getTasks = async (apiReference, opts) => {
         return response;
     }
     else {
-        const query = `SELECT * FROM tasks WHERE is_deleted = 0 and user_id = ? ORDER BY id LIMIT ? OFFSET ?`;
+
+        let query = `SELECT * FROM tasks WHERE is_deleted = 0 and user_id = ? ORDER BY id LIMIT ? OFFSET ?`;
         const val = [parseFloat(opts.user_id), parseFloat(opts.limit), parseFloat(opts.offset)];
+
 
         queryResponse = await dbHandler.executeQuery(apiReference, 'getTasks', query, val);
         if (queryResponse.ERROR) {
@@ -52,6 +54,10 @@ exports.createTask = async (apiReference, opts) => {
     if (dbProperties.selectedDb === 'mongo') {
         try {
             queryResponse = await tasks.create(opts);
+            if(_.isEmpty(queryResponse)){
+                response.error = "no active task for specified user";
+                return response;
+            }
             response.success = true;
             response.data = queryResponse;
             return response;
@@ -64,7 +70,7 @@ exports.createTask = async (apiReference, opts) => {
     }
 
     else {
-        const qry = `INSERT INTO tasks SET ?;`
+        const qry = `INSERT INTO tasks SET ?`;
         const val = [opts];
 
         queryResponse = await dbHandler.executeQuery(apiReference, 'createTask', qry, val);
@@ -75,8 +81,9 @@ exports.createTask = async (apiReference, opts) => {
 
         response.success = true;
         response.data = queryResponse;
+        return response;
     }
-    return response;
+    
 }
 
 exports.deleteTask = async (apiReference, opts) => {

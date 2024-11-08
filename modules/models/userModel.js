@@ -20,6 +20,10 @@ const userSchema = new mongo.Schema({
         type: String,
         required: true,
         minlength: 6
+    },
+    role:{
+        type: String,
+        default: "user"
     }
 });
 const users = mongo.model('users', userSchema);

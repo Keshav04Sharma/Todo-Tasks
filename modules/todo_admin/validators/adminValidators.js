@@ -10,12 +10,24 @@ const getTasks = async(req, res, next)=>{
         module: apiReferenceModule,
         api: 'getTasks'
     };
-    const schema = Joi.object({
-        offset: Joi.number().optional(),
-        limit: Joi.number().optional()
-    });
+    if(dbProperties.selectedDb === 'mongo'){
+        schema = Joi.object({
+            _id: Joi.string().required(),
+            user_id: Joi.string().required(),
+            task: Joi.string().optional(),
+            
+        })
+    }
+    else{
+        schema = Joi.object({
+            id: Joi.number().required(),
+            user_id : Joi.number().required(),
+            task: Joi.string().optional(),
+            
+        });
+    }
 
-    let reqBody = {...req.body};
+    let reqBody = {...req.query};
 
     let valid = await validator.validateField(apiReferenceModule, reqBody, res, schema);
     
@@ -29,10 +41,20 @@ const createTask = async(req, res, next)=>{
         module:  apiReferenceModule,
         api: 'createTask'
     };
-
-    const schema = Joi.object({
-        task: Joi.string().max(40).required()
-    });
+    let schema;
+    if (dbProperties.selectedDb === 'mongo'){
+        schema = Joi.object({
+            task: Joi.string().max(40).required(),
+            user_id: Joi.string().required()
+        });
+    }
+    else{
+        schema = Joi.object({
+            task: Joi.string().max(40).required(),
+            user_id: Joi.number().required()
+        });
+    }
+    
 
     let reqBody = {...req.body};
 
@@ -49,17 +71,23 @@ const deleteTask = async(req, res, next)=>{
         module:  apiReferenceModule,
         api: 'deleteTask'
     };
+
     let schema;
+
     if(dbProperties.selectedDb === 'mongo'){
         schema = Joi.object({
-            _id: Joi.string().optional(),
+            _id: Joi.string().required(),
+            user_id: Joi.string().optional(),
             task: Joi.string().optional(),
+            
         })
     }
     else{
         schema = Joi.object({
-            id: Joi.number().optional(),
+            id: Joi.number().required(),
+            user_id : Joi.number().optional(),
             task: Joi.string().optional(),
+            
         });
     }
     let reqBody = {...req.body};
@@ -77,24 +105,26 @@ const updateTask = async(req, res, next)=>{
         module: apiReferenceModule,
         api: 'updateTask'
     };
+
     let schema;
+
     if(dbProperties.selectedDb === 'mongo'){
         schema = Joi.object({
-            _id: Joi.string().optional(),
+            _id: Joi.string().required(),
+            user_id: Joi.string().optional(),
             task: Joi.string().optional(),
             is_complete: Joi.number().optional()
         })
     }
     else{
         schema = Joi.object({
-            id: Joi.number().optional(),
+            id: Joi.number().required(),
+            user_id : Joi.number().optional(),
             task: Joi.string().optional(),
             is_complete: Joi.number().optional()
         });
     }
-    
-
-    let reqBody = {...req.body.id};
+    let reqBody = {...req.body};
 
     let valid = await validator.validateField(apiReferenceModule, reqBody, res, schema);
 
@@ -110,14 +140,28 @@ const getSubtasks= async(req, res, next)=>{
         module:apiReferenceModule,
         api: 'get subtask'
     };
+    let schema;
+    if(dbProperties.selectedDb === 'mongo'){
+        schema = Joi.object({
+            _id: Joi.string().optional(),
+            task_id: Joi.string().required(),
+            user_id: Joi.string().optional(),
+            offset: Joi.number().optional(),
+            limit: Joi.number().optional()
+        })
+    }
+    else{
+        schema = Joi.object({
+            id: Joi.number().optional(),
+            task_id: Joi.number().required(),
+            user_id : Joi.number().required(),
+            offset: Joi.number().optional(),
+            limit: Joi.number().optional()
+        });
+    }
+    
 
-    const schema = Joi.object({
-        task_id: Joi.number().required(),
-        offset: Joi.number().optional(),
-        limit: Joi.number().optional()
-    });
-
-    let reqBody = {...req.body};
+    let reqBody = {...req.query};
 
     let valid = await validator.validateField(apiReferenceModule, reqBody, res, schema);
 
@@ -133,11 +177,23 @@ const createSubtask = async(req, res, next)=>{
     };
     logging.log(req.apiReference, {EVENT: 'validating'});
 
-    
-    const schema = Joi.object({
-        task_id: Joi.required(),
-        subtask: Joi.array().items(Joi.string()).required()
-    });
+    let schema;
+    if(dbProperties.selectedDb === 'mongo'){
+        schema = Joi.object({
+            task_id: Joi.string().required(),
+            user_id: Joi.string().required(),
+            subtask: Joi.array().items(Joi.string()).required()
+
+        })
+    }
+    else{
+        schema = Joi.object({
+            task_id: Joi.number().required(),
+            user_id : Joi.number().optional(),
+            subtask: Joi.array().items(Joi.string()).required()
+
+        });
+    }
 
     let reqBody = {...req.body};
     let valid = await validator.validateField(apiReferenceModule, reqBody, res, schema);
@@ -155,13 +211,15 @@ const deleteSubtask = async(req, res, next)=>{
     let schema;
     if(dbProperties.selectedDb === 'mongo'){
         schema = Joi.object({
-            _id: Joi.string().optional(),
+            _id: Joi.string().required(),
+            user_id: Joi.string().required(),
             task_id: Joi.string().optional(),
         })
     }
     else{
         schema = Joi.object({
-            id: Joi.number().optional(),
+            id: Joi.number().required(),
+            user_id: Joi.number().required(),
             task_id: Joi.number().optional(),
         });
     }
@@ -182,6 +240,7 @@ const updateSubtask= async(req, res, next)=>{
     if (dbProperties.selectedDb === 'mongo'){
         schema = Joi.object({
             _id: Joi.string().required(),
+            user_id: Joi.string().required(),
             subtask: Joi.string().optional(),
             is_complete: Joi.number().optional()
         });
@@ -189,6 +248,7 @@ const updateSubtask= async(req, res, next)=>{
     }else{
         schema = Joi.object({
             id: Joi.number().required(),
+            user_id: Joi.number().required(),
             subtask: Joi.string().optional(),
             is_complete: Joi.number().optional()
         });
