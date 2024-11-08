@@ -72,11 +72,11 @@ exports.deleteTask = async(req, res, next)=>{
 
 exports.updateTask = async(req, res, next)=>{
     let apiReference = req.apiReference;
-    let {user_id} = res.locals.auth_details;
+    let {user_id, role} = res.locals.auth_details;
 
 
     try{
-        const reqBody = {...req.body, user_id};
+        const reqBody = {...req.body, user_id, role};
 
         const response = await todoService.updateTask(apiReference, reqBody);
 

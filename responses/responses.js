@@ -38,6 +38,15 @@ const invalidAuthKey = (res, data, message)=>{
     this.sendResponse(res, response);
 }
 
+const notAnAdmin = (res, data, message)=>{
+    let response = {
+        message: "The User is not an Admin. Please login as Admin if you have that auth.",
+        status: responseConstants.responseStatus.SESSION_EXPIRED,
+        data : data || {}
+    };
+    this.sendResponse(res, response);
+}
+
 const sendResponse = (res, data)=>{
     let response = JSON.stringify({
         message: data.message,
@@ -58,9 +67,11 @@ const alreadyExists=(res, data)=>{
 }
 
 
+
 exports.success                         = success;
 exports.failure                         = failure;
 exports.sendResponse                    = sendResponse;
 exports.invalidAuthKey                  = invalidAuthKey;
 exports.alreadyExists                   = alreadyExists;
 exports.validationMissingParameterError = validationMissingParameterError;
+exports.notAnAdmin                      = notAnAdmin;
